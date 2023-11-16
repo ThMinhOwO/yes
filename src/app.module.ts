@@ -29,6 +29,7 @@ import { SessionModule } from './session/session.module';
 import { MailerModule } from './mailer/mailer.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
+import { TeamsModule } from './teams/teams.module';
 
 @Module({
   imports: [
@@ -90,6 +91,7 @@ import { TasksModule } from './tasks/tasks.module';
     HomeModule,
     ProjectsModule,
     TasksModule,
+    TeamsModule,
   ],
 })
 export class AppModule {}

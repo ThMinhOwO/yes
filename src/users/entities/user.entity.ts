@@ -18,6 +18,7 @@ import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
+import { TeamToUser } from 'src/teams/entities/team-to-user';
 
 @Entity()
 export class User extends EntityHelper {
@@ -88,6 +89,9 @@ export class User extends EntityHelper {
 
   @OneToMany(() => UserToTask, (userToTask) => userToTask.user,{nullable: true})
   userToTask?: UserToTask[];
+
+  @OneToMany(() => TeamToUser, (teamToUser) => teamToUser.user,{nullable: true})
+  teamToUser?: TeamToUser[];
 
   @DeleteDateColumn()
   deletedAt: Date;
