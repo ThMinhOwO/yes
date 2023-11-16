@@ -19,6 +19,7 @@ import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
 import { TeamToUser } from 'src/teams/entities/team-to-user.entity';
+import { RoomToUser } from 'src/chat/entities/room-to-user.entity';
 
 @Entity()
 export class User extends EntityHelper {
@@ -92,6 +93,9 @@ export class User extends EntityHelper {
 
   @OneToMany(() => TeamToUser, (teamToUser) => teamToUser.user,{nullable: true})
   teamToUser?: TeamToUser[];
+
+  @OneToMany(() => RoomToUser, (roomToUser) => roomToUser.user,{nullable: true})
+  roomToUser?: RoomToUser[];
 
   @DeleteDateColumn()
   deletedAt: Date;

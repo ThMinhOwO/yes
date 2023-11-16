@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreatePageDto } from './dto/create-pages.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Page } from './entities/page.entity';
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, Like, Repository } from 'typeorm';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
@@ -41,16 +41,16 @@ export class PagesService {
   }): Promise<Page[]> {
     const where: FindOptionsWhere<Page> = {};
     if (filterOptions?.name) {
-      where.name = filterOptions.name;
+      where.name = Like(`%${filterOptions.name}%`);
     }
     if(filterOptions?.path){
-      where.path = filterOptions.path;
+      where.path = Like(`%${filterOptions.path}%`);
     }
     if(filterOptions?.description){
-      where.description = filterOptions.description;
+      where.description = Like(`%${filterOptions.description}%`);
     }
     if(filterOptions?.icon){
-      where.icon = filterOptions.icon;
+      where.icon = Like(`%${filterOptions.icon}%`);
     }
     if(filterOptions?.order){
       where.order = filterOptions.order;
@@ -63,7 +63,7 @@ export class PagesService {
       //relations: ['pageToUser', 'pageToUser.user'],
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
-      where: where,
+      where: where,   
       order: sortOptions?.reduce(
         (accumulator, sort) => ({
           ...accumulator,

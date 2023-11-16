@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Project } from './entities/project.entity';
-import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
+import { DeepPartial, FindOptionsWhere, Like, Repository } from 'typeorm';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
@@ -30,7 +30,7 @@ export class ProjectsService {
   }): Promise<Project[]> {
     const where: FindOptionsWhere<Project> = {};
     if (filterOptions?.name) {
-      where.name = filterOptions.name;
+      where.name = Like(`%${filterOptions.name}%`);
     }
 
     return this.projectRepository.find({

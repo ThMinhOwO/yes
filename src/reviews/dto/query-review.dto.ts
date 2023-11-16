@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../../roles/entities/role.entity';
 import {
   IsNumber,
   IsOptional,
@@ -7,36 +6,39 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
-import { User } from '../entities/user.entity';
+import { Review } from '../entities/review.entity';
+import { UUID } from 'src/utils/types/uuid';
 
-export class FilterUserDto {
-
-  @ApiProperty({ type: Role })
+export class FilterReviewDto {
+  @ApiProperty()
   @IsOptional()
-  @ValidateNested({ each: true })
-  @Type(() => Role)
-  roles?: Role[] | null;
+  objectId?: UUID | null;
 
   @ApiProperty()
-  @IsString()
-  name?: string;
+  @IsOptional()
+  objectType?: UUID | null;
 
   @ApiProperty()
-  @IsString()
-  email?: string;
+  @IsOptional()
+  title?: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  description?: string | null;
+
 }
 
-export class SortUserDto {
+export class SortReviewDto {
   @ApiProperty()
   @IsString()
-  orderBy: keyof User;
+  orderBy: keyof Review;
 
   @ApiProperty()
   @IsString()
   order: string;
 }
 
-export class QueryUserDto {
+export class QueryReviewDto {
   @ApiProperty({
     required: false,
   })
@@ -56,19 +58,20 @@ export class QueryUserDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) =>
-    value ? plainToInstance(FilterUserDto, JSON.parse(value)) : undefined,
+    value ? plainToInstance(FilterReviewDto, JSON.parse(value)) : undefined,
   )
-  @ValidateNested()
-  @Type(() => FilterUserDto)
-  filters?: FilterUserDto | null;
+  @Type(() => FilterReviewDto)
+  filters?: FilterReviewDto | null;
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) => {
     console.log(JSON.parse(value));
-    return value ? plainToInstance(SortUserDto, JSON.parse(value)) : undefined;
+    return value
+      ? plainToInstance(SortReviewDto, JSON.parse(value))
+      : undefined;
   })
   @ValidateNested({ each: true })
-  @Type(() => SortUserDto)
-  sort?: SortUserDto[] | null;
+  @Type(() => SortReviewDto)
+  sort?: SortReviewDto[] | null;
 }

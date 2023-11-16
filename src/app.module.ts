@@ -31,6 +31,7 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TeamsModule } from './teams/teams.module';
 import { PagesModule } from './pages/pages.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -93,7 +94,8 @@ import { PagesModule } from './pages/pages.module';
     ProjectsModule,
     TasksModule,
     TeamsModule,
-    PagesModule
+    PagesModule,
+    ChatModule
   ],
 })
 export class AppModule {}
