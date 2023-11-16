@@ -7,25 +7,34 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
-import { Project } from '../entities/project.entity';
+import { Task } from '../entities/task.entity';
+import { UUID } from 'src/utils/types/uuid';
 
-export class FilterProjectDto {
+export class FilterTaskDto {
   @ApiProperty()
   @IsOptional()
   name?: string | null;
+
+  @ApiProperty()
+  @IsOptional()
+  users?: UUID[] | null; 
+
+  @ApiProperty()
+  @IsOptional()
+  project?: UUID | null;
 }
 
-export class SortProjectDto {
+export class SortTaskDto {
   @ApiProperty()
   @IsString()
-  orderBy: keyof Project;
+  orderBy: keyof Task;
 
   @ApiProperty()
   @IsString()
   order: string;
 }
 
-export class QueryProjectDto {
+export class QueryTaskDto {
   @ApiProperty({
     required: false,
   })
@@ -45,20 +54,20 @@ export class QueryProjectDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) =>
-    value ? plainToInstance(FilterProjectDto, JSON.parse(value)) : undefined,
+    value ? plainToInstance(FilterTaskDto, JSON.parse(value)) : undefined,
   )
-  @Type(() => FilterProjectDto)
-  filters?: FilterProjectDto | null;
+  @Type(() => FilterTaskDto)
+  filters?: FilterTaskDto | null;
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) => {
     console.log(JSON.parse(value));
     return value
-      ? plainToInstance(SortProjectDto, JSON.parse(value))
+      ? plainToInstance(SortTaskDto, JSON.parse(value))
       : undefined;
   })
   @ValidateNested({ each: true })
-  @Type(() => SortProjectDto)
-  sort?: SortProjectDto[] | null;
+  @Type(() => SortTaskDto)
+  sort?: SortTaskDto[] | null;
 }

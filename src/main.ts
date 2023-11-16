@@ -10,7 +10,12 @@ import { useContainer } from 'class-validator';
 import { AppModule } from './app.module';
 import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
+import fs from 'fs';
+const dir = 'D:\\Projects\\test-nest-2\\dist\\src\\i18n';
 
+if (!fs.existsSync(dir)) {
+  fs.mkdirSync(dir, { recursive: true });
+}
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   useContainer(app.select(AppModule), { fallbackOnErrors: true });

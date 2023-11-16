@@ -25,6 +25,7 @@ import { User } from './entities/user.entity';
 import { InfinityPaginationResultType } from '../utils/types/infinity-pagination-result.type';
 import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
+import { UUID } from 'src/utils/types/uuid';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
@@ -78,8 +79,8 @@ export class UsersController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: string): Promise<NullableType<User>> {
-    return this.usersService.findOne({ id: +id });
+  findOne(@Param('id') id: UUID): Promise<NullableType<User>> {
+    return this.usersService.findOne({ id: id });
   }
 
   @SerializeOptions({
@@ -88,7 +89,7 @@ export class UsersController {
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
   update(
-    @Param('id') id: number,
+    @Param('id') id: UUID,
     @Body() updateProfileDto: UpdateUserDto,
   ): Promise<User> {
     return this.usersService.update(id, updateProfileDto);
@@ -96,7 +97,7 @@ export class UsersController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: number): Promise<void> {
+  remove(@Param('id') id: UUID): Promise<void> {
     return this.usersService.softDelete(id);
   }
 }

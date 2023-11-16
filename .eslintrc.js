@@ -35,5 +35,7 @@ module.exports = {
           'Add "{ infer: true }" to configService.get() for correct typechecking. Example: configService.get("database.port", { infer: true })',
       },
     ],
+    'prettier/prettier': 0,
+    '@typescript-eslint/no-unused-vars': 'off',
   },
 };

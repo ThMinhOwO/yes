@@ -1,15 +1,14 @@
+/* eslint-disable prettier/prettier */
 import {
   Column,
   AfterLoad,
-  CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
   ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  OneToMany,
 } from 'typeorm';
 import { Role } from '../../roles/entities/role.entity';
 import { Status } from '../../statuses/entities/status.entity';
@@ -18,11 +17,10 @@ import bcrypt from 'bcryptjs';
 import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
+import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
 
 @Entity()
 export class User extends EntityHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
 
   // For "string | null" we need to use String type.
   // More info: https://github.com/typeorm/typeorm/issues/2567
@@ -88,11 +86,8 @@ export class User extends EntityHelper {
   @Exclude({ toPlainOnly: true })
   hash: string | null;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToMany(() => UserToTask, (userToTask) => userToTask.user,{nullable: true})
+  userToTask?: UserToTask[];
 
   @DeleteDateColumn()
   deletedAt: Date;

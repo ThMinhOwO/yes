@@ -6,7 +6,7 @@ import { DeepPartial, FindOptionsWhere, Repository } from 'typeorm';
 import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
-import { SortProjectDto } from './dto/query-project.dto';
+import { FilterProjectDto, SortProjectDto } from './dto/query-project.dto';
 
 @Injectable()
 export class ProjectsService {
@@ -20,20 +20,18 @@ export class ProjectsService {
     );
   }
   findManyWithPagination({
-    //filterOptions,
+    filterOptions,
     sortOptions,
     paginationOptions,
   }: {
-    //filterOptions?: FilterUserDto | null;
+    filterOptions?: FilterProjectDto | null;
     sortOptions?: SortProjectDto[] | null;
     paginationOptions: IPaginationOptions;
   }): Promise<Project[]> {
     const where: FindOptionsWhere<Project> = {};
-    // if (filterOptions?.roles?.length) {
-    //   where.role = filterOptions.roles.map((role) => ({
-    //     id: role.id,
-    //   }));
-    // }
+    if (filterOptions?.name) {
+      where.name = filterOptions.name;
+    }
 
     return this.projectRepository.find({
       skip: (paginationOptions.page - 1) * paginationOptions.limit,

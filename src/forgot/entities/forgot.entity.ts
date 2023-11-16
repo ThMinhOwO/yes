@@ -4,7 +4,6 @@ import {
   Entity,
   Index,
   ManyToOne,
-  PrimaryGeneratedColumn,
   DeleteDateColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
@@ -13,8 +12,6 @@ import { EntityHelper } from 'src/utils/entity-helper';
 
 @Entity()
 export class Forgot extends EntityHelper {
-  @PrimaryGeneratedColumn()
-  id: number;
 
   @Allow()
   @Column()
