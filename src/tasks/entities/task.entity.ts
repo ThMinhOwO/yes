@@ -1,6 +1,5 @@
 import { Project } from 'src/projects/entities/project.entity';
 import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
-import { User } from 'src/users/entities/user.entity';
 import { EntityHelper } from 'src/utils/entity-helper';
 import {
   Column,
@@ -9,7 +8,7 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-@Entity('team')
+@Entity('task')
 export class Task extends EntityHelper {
   @Column()
   name?: string;

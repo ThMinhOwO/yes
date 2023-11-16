@@ -18,7 +18,7 @@ import { EntityHelper } from 'src/utils/entity-helper';
 import { AuthProvidersEnum } from 'src/auth/auth-providers.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
-import { TeamToUser } from 'src/teams/entities/team-to-user';
+import { TeamToUser } from 'src/teams/entities/team-to-user.entity';
 
 @Entity()
 export class User extends EntityHelper {

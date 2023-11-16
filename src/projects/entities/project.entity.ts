@@ -1,6 +1,5 @@
 import { Task } from 'src/tasks/entities/task.entity';
-import { Team } from 'src/teams/entities/team.entity';
-import { TeamToProject } from 'src/teams/entities/team-to-project';
+import { TeamToProject } from 'src/teams/entities/team-to-project.entity';
 import { EntityHelper } from 'src/utils/entity-helper';
 import {
   Column,

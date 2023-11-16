@@ -7,15 +7,13 @@ import { Project } from 'src/projects/entities/project.entity';
 
 @Entity('team_to_project')
 export class TeamToProject extends EntityHelper {
-    @Column('team_id')
+    @Column()
     teamId: UUID;
-    @Column('project_id')
+    @Column()
     projectId: UUID;
     @ManyToOne(() => Team, (team) => team.teamToProject)
-    @JoinColumn({ name: 'team_id' })
     team: Team;
     @ManyToOne(() => Project, (project) => project.teamToProject)
-    @JoinColumn({ name: 'project_id' })
     project: Project;
 
 }

@@ -9,8 +9,8 @@ import {
   ManyToOne,
   OneToMany,
 } from 'typeorm';
-import { TeamToProject } from './team-to-project';
-import { TeamToUser } from './team-to-user';
+import { TeamToProject } from './team-to-project.entity';
+import { TeamToUser } from './team-to-user.entity';
 
 @Entity('team')
 export class Team extends EntityHelper {
@@ -23,9 +23,9 @@ export class Team extends EntityHelper {
   @Column({ nullable: true})
   status?: string;
 
-  @OneToMany(() => TeamToProject, (teamToProject) => teamToProject.team)
-  teamToProject: TeamToProject[];
+  @OneToMany(() => TeamToProject, (teamToProject) => teamToProject.team,{cascade: true,nullable: true})
+  teamToProject?: TeamToProject[];
 
   @OneToMany(() => TeamToUser, (teamToUser) => teamToUser.team, {cascade: true,nullable: true})
-  teamToUser: TeamToUser[];
+  teamToUser?: TeamToUser[];
 }

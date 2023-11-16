@@ -7,8 +7,8 @@ import { IPaginationOptions } from 'src/utils/types/pagination-options';
 import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { FilterTeamDto, SortTeamDto } from './dto/query-teams.dto';
-import { TeamToUser } from './entities/team-to-user';
-import { TeamToProject } from './entities/team-to-project';
+import { TeamToUser } from './entities/team-to-user.entity';
+import { TeamToProject } from './entities/team-to-project.entity';
 import { UUID } from 'src/utils/types/uuid';
 @Injectable()
 export class TeamsService {
@@ -68,7 +68,7 @@ export class TeamsService {
       }));
     }
     return this.teamRepository.find({
-      relations: ['userToTeam', 'userToTeam.user'],
+      relations: ['teamToUser', 'teamToUser.user','teamToProject','teamToProject.project'],
       skip: (paginationOptions.page - 1) * paginationOptions.limit,
       take: paginationOptions.limit,
       where: where,
@@ -90,6 +90,7 @@ export class TeamsService {
 
   async update(payload: DeepPartial<Team>,projects: UUID[] | undefined,users: UUID[] | undefined): Promise<Team> {
     if(projects!==undefined){
+      
       await this.teamToProjectRepository.delete({
         teamId: payload.id,
       });

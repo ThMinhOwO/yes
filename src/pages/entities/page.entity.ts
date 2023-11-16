@@ -1,8 +1,10 @@
 import { Allow } from 'class-validator';
 import { Role } from 'src/roles/entities/role.entity';
 import { EntityHelper } from 'src/utils/entity-helper';
-import { Entity, JoinTable, ManyToMany, Column } from 'typeorm';
+import { Entity, JoinTable, ManyToMany, Column, OneToMany, ManyToOne } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { PageToRole } from './page-to-role.entity';
+import { UUID } from 'src/utils/types/uuid';
 
 @Entity('c_page')
 export class Page extends EntityHelper {
@@ -31,7 +33,13 @@ export class Page extends EntityHelper {
   @Column({nullable: true})
   order?: number;
 
-  @ManyToMany(() => Role, { cascade: true })
-  @JoinTable()
-  roles?: Role[];
+  @Allow()
+  @ApiProperty()
+  @Column({nullable: true})
+  parent?: UUID;
+
+  @OneToMany(() => PageToRole, (pageToRole) => pageToRole.page, {cascade: true,nullable: true})
+  pageToRole?: PageToRole[];
+
+
 }

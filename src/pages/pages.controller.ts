@@ -12,12 +12,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { TeamsService } from './teams.service';
-import { CreateTeamDto } from './dto/create-teams.dto';
-import { UpdateTeamDto } from './dto/update-teams.dto';
-import { QueryTeamDto } from './dto/query-teams.dto';
+import { PagesService } from './pages.service';
+import { CreatePageDto } from './dto/create-pages.dto';
+import { UpdatePageDto } from './dto/update-pages.dto';
+import { QueryPageDto } from './dto/query-pages.dto';
 import { InfinityPaginationResultType } from 'src/utils/types/infinity-pagination-result.type';
-import { Team } from './entities/team.entity';
+import { Page } from './entities/page.entity';
 import { infinityPagination } from 'src/utils/infinity-pagination';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -26,18 +26,19 @@ import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { UUID } from 'src/utils/types/uuid';
+import { ProjectsService } from 'src/projects/projects.service';
 
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Teams')
+@ApiTags('Pages')
 @Controller({
-  path: 'teams',
+  path: 'pages',
   version: '1',
 })
-export class TeamsController {
+export class PagesController {
   constructor(
-    private readonly teamsService: TeamsService,
+    private readonly pagesService: PagesService,
     ) {}
 
   @SerializeOptions({
@@ -45,9 +46,10 @@ export class TeamsController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTeamDto: CreateTeamDto): Promise<Team> {
+  create(@Body() createPageDto: CreatePageDto): Promise<Page> {
     //get current user id
-    return this.teamsService.create(createTeamDto);
+
+    return this.pagesService.create(createPageDto);
   }
 
   @SerializeOptions({
@@ -56,8 +58,8 @@ export class TeamsController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Query() query: QueryTeamDto,
-  ): Promise<InfinityPaginationResultType<Team>> {
+    @Query() query: QueryPageDto,
+  ): Promise<InfinityPaginationResultType<Page>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
@@ -65,7 +67,7 @@ export class TeamsController {
     }
 
     return infinityPagination(
-      await this.teamsService.findManyWithPagination({
+      await this.pagesService.findManyWithPagination({
         filterOptions: query?.filters,
         sortOptions: query?.sort,
         paginationOptions: {
@@ -82,8 +84,8 @@ export class TeamsController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: UUID): Promise<NullableType<Team>> {
-    return this.teamsService.findOne({ id: id });
+  findOne(@Param('id') id: UUID): Promise<NullableType<Page>> {
+    return this.pagesService.findOne({ id: id });
   }
 
   @SerializeOptions({
@@ -91,21 +93,15 @@ export class TeamsController {
   })
   @Patch(':id')
   @HttpCode(HttpStatus.OK)
-  async update(
-    @Body() updateTeamDto: UpdateTeamDto,
-  ): Promise<Team> {
-    console.log(updateTeamDto);
-    return this.teamsService.update({
-      id: updateTeamDto.id,
-      name: updateTeamDto.name,
-      description: updateTeamDto.description,
-      status: updateTeamDto.status,
-    }, updateTeamDto.projects, updateTeamDto.users);
+  update(
+    @Body() updatePageDto: UpdatePageDto,
+  ): Promise<Page> {
+    return this.pagesService.update(updatePageDto);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   remove(@Param('id') id: UUID): Promise<void> {
-    return this.teamsService.softDelete(id);
+    return this.pagesService.softDelete(id);
   }
 }

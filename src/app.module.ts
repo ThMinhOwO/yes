@@ -30,6 +30,7 @@ import { MailerModule } from './mailer/mailer.module';
 import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TeamsModule } from './teams/teams.module';
+import { PagesModule } from './pages/pages.module';
 
 @Module({
   imports: [
@@ -92,6 +93,7 @@ import { TeamsModule } from './teams/teams.module';
     ProjectsModule,
     TasksModule,
     TeamsModule,
+    PagesModule
   ],
 })
 export class AppModule {}

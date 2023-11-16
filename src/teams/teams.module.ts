@@ -5,13 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import {  Team } from './entities/team.entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
-import { TeamToProject } from './entities/team-to-project';
-import { ProjectsModule } from 'src/projects/projects.module';
-import { TeamToUser } from './entities/team-to-user';
-import { UsersModule } from 'src/users/users.module';
+import { TeamToProject } from './entities/team-to-project.entity';
+import { TeamToUser } from './entities/team-to-user.entity';
+
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Team, TeamToUser, TeamToProject]), ProjectsModule,UsersModule],
+  imports: [TypeOrmModule.forFeature([Team, TeamToUser, TeamToProject])],
   controllers: [TeamsController],
   providers: [IsExist, IsNotExist, TeamsService],
   exports: [TeamsService],

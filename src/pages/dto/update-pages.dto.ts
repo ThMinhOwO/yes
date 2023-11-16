@@ -1,9 +1,9 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateTeamDto } from './create-teams.dto';
+import { CreatePageDto } from './create-pages.dto';
 import { UUID } from 'src/utils/types/uuid';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 
-export class UpdateTeamDto extends PartialType(CreateTeamDto) {
+export class UpdatePageDto extends PartialType(CreatePageDto) {
   @ApiProperty()
   @IsNotEmpty()
   id: UUID;
@@ -14,19 +14,23 @@ export class UpdateTeamDto extends PartialType(CreateTeamDto) {
 
   @ApiProperty()
   @IsOptional()
+  path?: string;
+
+  @ApiProperty()
+  @IsOptional()
   description?: string;
 
   @ApiProperty()
   @IsOptional()
-  status?: UUID;
+  icon?: string;
 
   @ApiProperty()
   @IsOptional()
-  users?: UUID[];
+  order?: number;
 
   @ApiProperty()
   @IsOptional()
-  projects?: UUID[];
+  parent?: UUID;
   
 
 
