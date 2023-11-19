@@ -6,42 +6,45 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Transform, Type, plainToInstance } from 'class-transformer';
-import { Review } from '../entities/review.entity';
+import { Ticket } from '../entities/ticket.entity';
 import { UUID } from 'src/utils/types/uuid';
 
-export class FilterReviewDto {
+export class FilterTicketDto {
   @ApiProperty()
   @IsOptional()
+  title?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  description?: string;
   
-  objectId?: UUID | null;
+  @ApiProperty()
+  @IsOptional()
+  attachment?: string;
 
   @ApiProperty()
   @IsOptional()
-  objectType?: UUID | null;
+  status?: string;
 
   @ApiProperty()
   @IsOptional()
-  title?: string | null;
-
-  @ApiProperty()
-  @IsOptional()
-  description?: string | null;
+  customerId?: UUID;
 
   
 
 }
 
-export class SortReviewDto {
+export class SortTicketDto {
   @ApiProperty()
   @IsString()
-  orderBy: keyof Review;
+  orderBy: keyof Ticket;
 
   @ApiProperty()
   @IsString()
   order: string;
 }
 
-export class QueryReviewDto {
+export class QueryTicketDto {
   @ApiProperty({
     required: false,
   })
@@ -61,20 +64,20 @@ export class QueryReviewDto {
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) =>
-    value ? plainToInstance(FilterReviewDto, JSON.parse(value)) : undefined,
+    value ? plainToInstance(FilterTicketDto, JSON.parse(value)) : undefined,
   )
-  @Type(() => FilterReviewDto)
-  filters?: FilterReviewDto | null;
+  @Type(() => FilterTicketDto)
+  filters?: FilterTicketDto | null;
 
   @ApiProperty({ type: String, required: false })
   @IsOptional()
   @Transform(({ value }) => {
     console.log(JSON.parse(value));
     return value
-      ? plainToInstance(SortReviewDto, JSON.parse(value))
+      ? plainToInstance(SortTicketDto, JSON.parse(value))
       : undefined;
   })
   @ValidateNested({ each: true })
-  @Type(() => SortReviewDto)
-  sort?: SortReviewDto[] | null;
+  @Type(() => SortTicketDto)
+  sort?: SortTicketDto[] | null;
 }

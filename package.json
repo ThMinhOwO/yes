@@ -1,5 +1,5 @@
 {
-  "name": "nestjs-boilerplate",
+  "name": "cpm-api-v2",
   "version": "0.0.1",
   "description": "",
   "author": "",
@@ -38,6 +38,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "10.0.2",
     "@nestjs/platform-express": "10.2.8",
+    "@nestjs/platform-socket.io": "^10.2.8",
     "@nestjs/swagger": "7.1.15",
     "@nestjs/typeorm": "10.0.0",
     "@nestjs/websockets": "^10.2.8",

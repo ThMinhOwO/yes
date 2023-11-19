@@ -1,3 +1,4 @@
+import { CustomerToProject } from 'src/customers/entities/customer-to-project.entity';
 import { Task } from 'src/tasks/entities/task.entity';
 import { TeamToProject } from 'src/teams/entities/team-to-project.entity';
 import { EntityHelper } from 'src/utils/entity-helper';
@@ -18,4 +19,8 @@ export class Project extends EntityHelper {
 
   @OneToMany(() => TeamToProject, (teamToProject) => teamToProject.project, {cascade: true,nullable: true})
   teamToProject?: TeamToProject[];
+
+  @OneToMany(() => CustomerToProject, (customerToProject) => customerToProject.project, {cascade: true,nullable: true})
+  customerToProjects?: CustomerToProject[];
+
 }

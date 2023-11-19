@@ -20,6 +20,7 @@ import { Exclude, Expose } from 'class-transformer';
 import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
 import { TeamToUser } from 'src/teams/entities/team-to-user.entity';
 import { RoomToUser } from 'src/chat/entities/room-to-user.entity';
+import { CustomerToUser } from 'src/customers/entities/customer-to-user.entity';
 
 @Entity()
 export class User extends EntityHelper {
@@ -97,6 +98,8 @@ export class User extends EntityHelper {
   @OneToMany(() => RoomToUser, (roomToUser) => roomToUser.user,{nullable: true})
   roomToUser?: RoomToUser[];
 
+  @OneToMany(() => CustomerToUser, (customerToUser) => customerToUser.user,{nullable: true})
+  customerToUsers?: CustomerToUser[];
   @DeleteDateColumn()
   deletedAt: Date;
 }

@@ -27,7 +27,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { UUID } from 'src/utils/types/uuid';
 import { ProjectsService } from 'src/projects/projects.service';
-
+import { ErrorResponse, OkResponse, OkResponseWithPagination, Response, ResponseWithPagination } from 'src/utils/response-helper';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -47,10 +47,10 @@ export class TasksController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {
+  async create(@Body() createTaskDto: CreateTaskDto): Promise<Response<Task>> {
     //get current user id
 
-    return this.tasksService.create(createTaskDto);
+    return new OkResponse(await this.tasksService.create(createTaskDto)) ;
   }
 
   @SerializeOptions({
@@ -60,23 +60,23 @@ export class TasksController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryTaskDto,
-  ): Promise<InfinityPaginationResultType<Task>> {
+  ): Promise<ResponseWithPagination<Task>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-
-    return infinityPagination(
-      await this.tasksService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
+    const res = await this.tasksService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return new OkResponseWithPagination(
+      res,
+      res.length === limit,
     );
   }
 
@@ -85,31 +85,34 @@ export class TasksController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: UUID): Promise<NullableType<Task>> {
-    return this.tasksService.findOne({ id: id });
+  async findOne(@Param('id') id: UUID): Promise<Response<Task>> {
+    const res = await this.tasksService.findOne({ id: id });
+    return res? new OkResponse(res) : new ErrorResponse('Task not found', HttpStatus.NOT_FOUND);
   }
 
   @SerializeOptions({
     groups: ['admin'],
   })
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
   async update(
     @Body() updateTaskDto: UpdateTaskDto,
-  ): Promise<Task> {
+  ): Promise<Response<Task>> {
     const project = await this.projectService.findOne({id: updateTaskDto.project});
-    return this.tasksService.update({
+    const res = await this.tasksService.update({
       id: updateTaskDto.id,
       name: updateTaskDto.name,
       description: updateTaskDto.description,
       status: updateTaskDto.status,
       project: project || undefined,
     });
+    return res? new OkResponse(res) : new ErrorResponse('Task cannot update', HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID): Promise<void> {
-    return this.tasksService.softDelete(id);
+  async remove(@Param('id') id: UUID): Promise<Response<string>> {
+    await this.tasksService.softDelete(id);
+    return new OkResponse('Task deleted successfully');
   }
 }

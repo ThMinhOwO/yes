@@ -1,12 +1,7 @@
-import { Project } from 'src/projects/entities/project.entity';
-import { UserToTask } from 'src/tasks/entities/user-to-task.entity';
-import { User } from 'src/users/entities/user.entity';
 import { EntityHelper } from 'src/utils/entity-helper';
 import {
   Column,
   Entity,
-  ManyToMany,
-  ManyToOne,
   OneToMany,
 } from 'typeorm';
 import { TeamToProject } from './team-to-project.entity';

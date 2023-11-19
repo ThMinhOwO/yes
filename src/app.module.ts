@@ -32,6 +32,9 @@ import { TasksModule } from './tasks/tasks.module';
 import { TeamsModule } from './teams/teams.module';
 import { PagesModule } from './pages/pages.module';
 import { ChatModule } from './chat/chat.module';
+import { ReviewsModule } from './reviews/reviews.module';
+import { CustomersModule } from './customers/customers.module';
+import { TicketsModule } from './tickets/tickets.module';
 
 @Module({
   imports: [
@@ -95,7 +98,11 @@ import { ChatModule } from './chat/chat.module';
     TasksModule,
     TeamsModule,
     PagesModule,
-    ChatModule
+    ChatModule,
+    ReviewsModule,
+    CustomersModule,
+    TicketsModule,
+    
   ],
 })
 export class AppModule {}

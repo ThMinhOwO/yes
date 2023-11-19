@@ -26,7 +26,7 @@ import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { UUID } from 'src/utils/types/uuid';
-
+import { ErrorResponse, OkResponse, OkResponseWithPagination, Response, ResponseWithPagination } from 'src/utils/response-helper';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -45,9 +45,9 @@ export class TeamsController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createTeamDto: CreateTeamDto): Promise<Team> {
+  async create(@Body() createTeamDto: CreateTeamDto): Promise<Response<Team>> {
     //get current user id
-    return this.teamsService.create(createTeamDto);
+    return new OkResponse(await this.teamsService.create(createTeamDto));
   }
 
   @SerializeOptions({
@@ -57,23 +57,23 @@ export class TeamsController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryTeamDto,
-  ): Promise<InfinityPaginationResultType<Team>> {
+  ): Promise<ResponseWithPagination<Team>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-
-    return infinityPagination(
-      await this.teamsService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
+    const res = await this.teamsService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return new OkResponseWithPagination(
+      res,
+      res.length === limit,
     );
   }
 
@@ -82,30 +82,33 @@ export class TeamsController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: UUID): Promise<NullableType<Team>> {
-    return this.teamsService.findOne({ id: id });
+  async findOne(@Param('id') id: UUID): Promise<Response<Team>> {
+    const res = await this.teamsService.findOne({ id: id });
+    return res ? new OkResponse(res) : new ErrorResponse('Team not found', HttpStatus.NOT_FOUND);
   }
 
   @SerializeOptions({
     groups: ['admin'],
   })
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
   async update(
     @Body() updateTeamDto: UpdateTeamDto,
-  ): Promise<Team> {
-    console.log(updateTeamDto);
-    return this.teamsService.update({
+  ): Promise<Response<Team>> {
+    //console.log(updateTeamDto);
+    const res = await this.teamsService.update({
       id: updateTeamDto.id,
       name: updateTeamDto.name,
       description: updateTeamDto.description,
       status: updateTeamDto.status,
     }, updateTeamDto.projects, updateTeamDto.users);
+    return res ? new OkResponse(res) : new ErrorResponse('Team cannot update', HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID): Promise<void> {
-    return this.teamsService.softDelete(id);
+  async remove(@Param('id') id: UUID): Promise<Response<string>> {
+    await this.teamsService.softDelete(id);
+    return new OkResponse('Team deleted successfully');
   }
 }

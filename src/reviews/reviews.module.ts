@@ -5,9 +5,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Review } from './entities/review.entity';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
 import { IsNotExist } from 'src/utils/validators/is-not-exists.validator';
+import { TasksModule } from 'src/tasks/tasks.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Review])],
+  imports: [TypeOrmModule.forFeature([Review]),TasksModule],
   controllers: [ReviewsController],
   providers: [IsExist, IsNotExist, ReviewsService],
   exports: [ReviewsService],

@@ -12,12 +12,12 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { ProjectsService } from './projects.service';
-import { CreateProjectDto } from './dto/create-project.dto';
-import { UpdateProjectDto } from './dto/update-project.dto';
-import { QueryProjectDto } from './dto/query-project.dto';
+import { TicketsService } from './tickets.service';
+import { CreateTicketDto } from './dto/create-ticket.dto';
+import { UpdateTicketDto } from './dto/update-ticket.dto';
+import { QueryTicketDto } from './dto/query-ticket.dto';
 import { InfinityPaginationResultType } from 'src/utils/types/infinity-pagination-result.type';
-import { Project } from './entities/project.entity';
+import { Ticket } from './entities/ticket.entity';
 import { infinityPagination } from 'src/utils/infinity-pagination';
 import { NullableType } from 'src/utils/types/nullable.type';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -26,28 +26,30 @@ import { RoleEnum } from 'src/roles/roles.enum';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { UUID } from 'src/utils/types/uuid';
-import { ErrorResponse, OkResponse, OkResponseWithPagination, Response, ResponseWithPagination } from 'src/utils/response-helper';
-
+import { OkResponseWithPagination, Response, ResponseWithPagination, OkResponse, ErrorResponse } from 'src/utils/response-helper';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-@ApiTags('Projects')
+@ApiTags('Tickets')
 @Controller({
-  path: 'projects',
+  path: 'tickets',
   version: '1',
 })
-export class ProjectsController {
-  constructor(private readonly projectsService: ProjectsService) {}
+export class TicketsController {
+  constructor(
+    private readonly ticketsService: TicketsService,
+
+    ) {}
 
   @SerializeOptions({
     groups: ['admin'],
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createProjectDto: CreateProjectDto): Promise<Response<Project>> {
+  async create(@Body() createTicketDto: CreateTicketDto): Promise<Response<Ticket>> {
     //get current user id
-    
-    return new OkResponse(await this.projectsService.create(createProjectDto)); 
+
+    return new OkResponse(await this.ticketsService.create(createTicketDto));
   }
 
   @SerializeOptions({
@@ -56,14 +58,14 @@ export class ProjectsController {
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
-    @Query() query: QueryProjectDto,
-  ): Promise<ResponseWithPagination<Project>> {
+    @Query() query: QueryTicketDto,
+  ): Promise<ResponseWithPagination<Ticket>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-    const res = await this.projectsService.findManyWithPagination({
+    const res = await this.ticketsService.findManyWithPagination({
       filterOptions: query?.filters,
       sortOptions: query?.sort,
       paginationOptions: {
@@ -73,7 +75,7 @@ export class ProjectsController {
     });
     return new OkResponseWithPagination(
       res,
-      res.length === limit
+      res.length === limit,
     );
   }
 
@@ -82,9 +84,9 @@ export class ProjectsController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: UUID): Promise<Response<Project>> {
-    const res = await this.projectsService.findOne({ id: id });
-    return res? new OkResponse(res) : new ErrorResponse('Project not found', HttpStatus.NOT_FOUND);
+  async findOne(@Param('id') id: UUID): Promise<Response<Ticket>> {
+    const res = await this.ticketsService.findOne({ id: id });
+    return res ? new OkResponse(res) : new ErrorResponse('Ticket not found', HttpStatus.NOT_FOUND);
   }
 
   @SerializeOptions({
@@ -93,17 +95,16 @@ export class ProjectsController {
   @Patch()
   @HttpCode(HttpStatus.OK)
   async update(
-    @Param('id') id: UUID,
-    @Body() updateProjectDto: UpdateProjectDto,
-  ): Promise<Response<Project>> {
-    const res = await this.projectsService.update(id, updateProjectDto);
-    return res? new OkResponse(res) : new ErrorResponse('Project cannot update', HttpStatus.NOT_FOUND);
+    @Body() updateTicketDto: UpdateTicketDto,
+  ): Promise<Response<Ticket>> {
+    const res = await this.ticketsService.update(updateTicketDto);
+    return res ? new OkResponse(res) : new ErrorResponse('Ticket cannot update', HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: UUID): Promise<Response<string>> {
-    await this.projectsService.softDelete(id);
-    return new OkResponse('Project deleted');
+    await this.ticketsService.softDelete(id);
+    return new OkResponse('Ticket deleted');
   }
 }

@@ -27,7 +27,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { UUID } from 'src/utils/types/uuid';
 import { ProjectsService } from 'src/projects/projects.service';
-
+import { ErrorResponse, OkResponse, OkResponseWithPagination, Response, ResponseWithPagination } from 'src/utils/response-helper';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -46,10 +46,10 @@ export class PagesController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createPageDto: CreatePageDto): Promise<Page> {
+  async create(@Body() createPageDto: CreatePageDto): Promise<Response<Page>> {
     //get current user id
-
-    return this.pagesService.create(createPageDto);
+    
+    return new OkResponse(await this.pagesService.create(createPageDto));
   }
 
   @SerializeOptions({
@@ -59,23 +59,23 @@ export class PagesController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryPageDto,
-  ): Promise<InfinityPaginationResultType<Page>> {
+  ): Promise<ResponseWithPagination<Page>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-
-    return infinityPagination(
-      await this.pagesService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
+    const res = await this.pagesService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return new OkResponseWithPagination(
+      res,
+      res.length === limit
     );
   }
 
@@ -84,24 +84,27 @@ export class PagesController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: UUID): Promise<NullableType<Page>> {
-    return this.pagesService.findOne({ id: id });
+  async findOne(@Param('id') id: UUID): Promise<Response<Page>> {
+    const res = await this.pagesService.findOne({ id: id });
+    return res ? new OkResponse(res) : new ErrorResponse('Page not found', HttpStatus.NOT_FOUND);
   }
 
   @SerializeOptions({
     groups: ['admin'],
   })
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
-  update(
+  async update(
     @Body() updatePageDto: UpdatePageDto,
-  ): Promise<Page> {
-    return this.pagesService.update(updatePageDto);
+  ): Promise<Response<Page>> {
+    const res = await this.pagesService.update(updatePageDto);
+    return res ? new OkResponse(res) : new ErrorResponse('Page cannot update', HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID): Promise<void> {
-    return this.pagesService.softDelete(id);
+  async remove(@Param('id') id: UUID): Promise<Response<string>> {
+    await this.pagesService.softDelete(id);
+    return new OkResponse('Page deleted successfully');
   }
 }

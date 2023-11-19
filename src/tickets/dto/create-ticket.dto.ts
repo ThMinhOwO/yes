@@ -2,28 +2,24 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { UUID } from 'src/utils/types/uuid';
 
-export class CreateReviewDto {
+export class CreateTicketDto {
   @ApiProperty()
   @IsNotEmpty()
-  objectId: UUID;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  objectType: UUID;
-
-  @ApiProperty()
-  @IsNotEmpty()
-  title: string;
+  title?: string;
 
   @ApiProperty()
   @IsOptional()
   description?: string;
-
+  
   @ApiProperty()
   @IsOptional()
   attachment?: string;
 
   @ApiProperty()
   @IsOptional()
-  status?: UUID;
+  status?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  customerId?: UUID;
 }

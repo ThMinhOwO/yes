@@ -1,21 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Allow } from "class-validator";
+import { Customer } from "src/customers/entities/customer.entity";
 import { Task } from "src/tasks/entities/task.entity";
 import { EntityHelper } from "src/utils/entity-helper";
 import { UUID } from "src/utils/types/uuid";
-import { Column, Entity, JoinTable, ManyToOne } from "typeorm";
-@Entity('review')
-export class Review extends EntityHelper{
-    @Allow()
-    @ApiProperty()
-    @Column()
-    objectId?: UUID;
+import { Column, Entity, JoinTable, ManyToOne, OneToMany } from "typeorm";
 
-    @Allow()
-    @ApiProperty()
-    @Column()
-    objectType?: UUID;
-
+@Entity()
+export class Ticket extends EntityHelper{
     @Allow()
     @ApiProperty()
     @Column()
@@ -36,6 +28,6 @@ export class Review extends EntityHelper{
     @Column()
     status?: string;
 
-    @ManyToOne(() => Task, (task) => task.reviews)
-    task?: Task;
+    @ManyToOne(() => Customer, (customer) => customer.tickets)
+    customer?: Customer;
 }

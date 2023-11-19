@@ -26,7 +26,7 @@ import { InfinityPaginationResultType } from '../utils/types/infinity-pagination
 import { NullableType } from '../utils/types/nullable.type';
 import { QueryUserDto } from './dto/query-user.dto';
 import { UUID } from 'src/utils/types/uuid';
-
+import { ErrorResponse, OkResponse, OkResponseWithPagination, Response, ResponseWithPagination } from 'src/utils/response-helper';
 @ApiBearerAuth()
 @Roles(RoleEnum.admin)
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -43,8 +43,8 @@ export class UsersController {
   })
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  create(@Body() createProfileDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createProfileDto);
+  async create(@Body() createProfileDto: CreateUserDto): Promise<Response<User>> {
+    return new OkResponse(await this.usersService.create(createProfileDto)); 
   }
 
   @SerializeOptions({
@@ -54,23 +54,23 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   async findAll(
     @Query() query: QueryUserDto,
-  ): Promise<InfinityPaginationResultType<User>> {
+  ): Promise<ResponseWithPagination<User>> {
     const page = query?.page ?? 1;
     let limit = query?.limit ?? 10;
     if (limit > 50) {
       limit = 50;
     }
-
-    return infinityPagination(
-      await this.usersService.findManyWithPagination({
-        filterOptions: query?.filters,
-        sortOptions: query?.sort,
-        paginationOptions: {
-          page,
-          limit,
-        },
-      }),
-      { page, limit },
+    const res = await this.usersService.findManyWithPagination({
+      filterOptions: query?.filters,
+      sortOptions: query?.sort,
+      paginationOptions: {
+        page,
+        limit,
+      },
+    });
+    return new OkResponseWithPagination(
+      res,
+      res.length === limit,
     );
   }
 
@@ -79,25 +79,28 @@ export class UsersController {
   })
   @Get(':id')
   @HttpCode(HttpStatus.OK)
-  findOne(@Param('id') id: UUID): Promise<NullableType<User>> {
-    return this.usersService.findOne({ id: id });
+  async findOne(@Param('id') id: UUID): Promise<Response<User>> {
+    const res = await this.usersService.findOne({ id: id });
+    return res? new OkResponse(res) : new ErrorResponse('User not found', HttpStatus.NOT_FOUND);
   }
 
   @SerializeOptions({
     groups: ['admin'],
   })
-  @Patch(':id')
+  @Patch()
   @HttpCode(HttpStatus.OK)
-  update(
+  async update(
     @Param('id') id: UUID,
     @Body() updateProfileDto: UpdateUserDto,
-  ): Promise<User> {
-    return this.usersService.update(id, updateProfileDto);
+  ): Promise<Response<User>> {
+    const res = await this.usersService.update(id, updateProfileDto);
+    return res? new OkResponse(res) : new ErrorResponse('User not found', HttpStatus.NOT_FOUND);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  remove(@Param('id') id: UUID): Promise<void> {
-    return this.usersService.softDelete(id);
+  async remove(@Param('id') id: UUID): Promise<Response<string>> {
+    await this.usersService.softDelete(id);
+    return new OkResponse('User deleted');
   }
 }

@@ -26,6 +26,10 @@ export class UpdateReviewDto extends PartialType(CreateReviewDto) {
 
   @ApiProperty()
   @IsOptional()
+  attachment?: string | undefined;
+
+  @ApiProperty()
+  @IsOptional()
   status?: UUID;
 
 
