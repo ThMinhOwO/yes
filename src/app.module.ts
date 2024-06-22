@@ -31,6 +31,9 @@ import { ProjectsModule } from './projects/projects.module';
 import { TasksModule } from './tasks/tasks.module';
 import { TeamsModule } from './teams/teams.module';
 import { PagesModule } from './pages/pages.module';
+import { MinioService } from './minio/minio.service';
+import { MinioModule } from './minio/minio.module';
+import { DocumentsModule } from './documents/documents.module';
 
 @Module({
   imports: [
@@ -93,7 +96,10 @@ import { PagesModule } from './pages/pages.module';
     ProjectsModule,
     TasksModule,
     TeamsModule,
-    PagesModule
+    PagesModule,
+    MinioModule,
+    DocumentsModule
   ],
+  providers: [MinioService],
 })
 export class AppModule {}
